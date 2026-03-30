@@ -14,7 +14,7 @@ A aplicação permite o registro de partidas e a visualização de métricas de 
 | Banco de Dados | PostgreSQL 16 |
 | ORM | Entity Framework Core (EF Core) |
 | Documentação | Swagger / OpenAPI |
-| Ferramentas | VS Code, Docker (opcional), pgAdmin 4 |
+| Ferramentas | VS Code, pgAdmin 4 |
 
 ---
 
