@@ -88,7 +88,4 @@ https://localhost:PORTA/swagger
 | `GET` | `/api/Partidas/{id}` | Busca detalhes de uma partida específica. |
 
 ---
-
-## 👩‍💻 Autora
-
 **Karolini** — Estudante de TIC @ UFSC · Graduação 2026
