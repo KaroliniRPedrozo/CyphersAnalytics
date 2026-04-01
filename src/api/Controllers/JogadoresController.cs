@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.database;
 using api.services;
+using Asp.Versioning;
 
 namespace api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class JogadoresController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -20,7 +22,7 @@ namespace api.Controllers
             _logger  = logger;
         }
 
-        // GET: api/Jogadores/Karo/BR1
+        // GET: api/v1/Jogadores/Karo/BR1
         [HttpGet("{gameName}/{tagLine}")]
         public async Task<IActionResult> BuscarJogador(string gameName, string tagLine)
         {
@@ -28,7 +30,7 @@ namespace api.Controllers
             {
                 var jogador = await _henrik.BuscarJogador(gameName, tagLine);
                 if (jogador == null)
-                    return NotFound(new { erro = "Jogador não encontrado. Verifique o nome e a tag." });
+                    return NotFound(new { erro = "Jogador nao encontrado. Verifique o nome e a tag." });
 
                 var jogadorExistente = await _context.Jogadores
                     .FirstOrDefaultAsync(j => j.Puuid == jogador.Puuid);
@@ -42,10 +44,9 @@ namespace api.Controllers
                     jogadorExistente.UltimaAtualizacao = DateTime.UtcNow;
                 }
 
-                // Evita duplicatas verificando o MatchId
-                var partidas        = await _henrik.BuscarPartidas(gameName, tagLine, jogador.Puuid);
-                var matchIdsExist   = _context.Partidas.Select(p => p.MatchId).ToHashSet();
-                var partidasNovas   = partidas.Where(p => !matchIdsExist.Contains(p.MatchId)).ToList();
+                var partidas      = await _henrik.BuscarPartidas(gameName, tagLine, jogador.Puuid);
+                var matchIdsExist = _context.Partidas.Select(p => p.MatchId).ToHashSet();
+                var partidasNovas = partidas.Where(p => !matchIdsExist.Contains(p.MatchId)).ToList();
 
                 _context.Partidas.AddRange(partidasNovas);
                 await _context.SaveChangesAsync();
@@ -66,6 +67,11 @@ namespace api.Controllers
                     .OrderByDescending(g => g.Average(p => p.Kda))
                     .FirstOrDefault()?.Key;
 
+                var kdaGeral    = todasPartidas.Any() ? Math.Round(todasPartidas.Average(p => p.Kda), 2) : 0;
+                var taxaVitoria = todasPartidas.Any()
+                    ? $"{Math.Round((double)todasPartidas.Count(p => p.Resultado == "Vitoria") / todasPartidas.Count * 100, 1)}%"
+                    : "0%";
+
                 return Ok(new
                 {
                     jogador.GameName,
@@ -75,10 +81,8 @@ namespace api.Controllers
                     TotalPartidas = todasPartidas.Count,
                     MelhorMapa    = melhorMapa,
                     MelhorAgente  = melhorAgente,
-                    KdaGeral      = todasPartidas.Any() ? Math.Round(todasPartidas.Average(p => p.Kda), 2) : 0,
-                    TaxaVitoria   = todasPartidas.Any()
-                        ? $"{Math.Round((double)todasPartidas.Count(p => p.Resultado == "Vitória") / todasPartidas.Count * 100, 1)}%"
-                        : "0%"
+                    KdaGeral      = kdaGeral,
+                    TaxaVitoria   = taxaVitoria
                 });
             }
             catch (Exception ex)
@@ -88,7 +92,56 @@ namespace api.Controllers
             }
         }
 
-        // GET: api/Jogadores/Karo/BR1/historico?page=1&size=10
+        // PUT: api/v1/Jogadores/Karo/BR1
+        [HttpPut("{gameName}/{tagLine}")]
+        public async Task<IActionResult> AtualizarJogador(string gameName, string tagLine)
+        {
+            try
+            {
+                var jogador = await _context.Jogadores
+                    .FirstOrDefaultAsync(j => j.GameName == gameName && j.TagLine == tagLine);
+
+                if (jogador == null)
+                    return NotFound(new { erro = "Jogador nao encontrado no banco. Faca uma busca primeiro." });
+
+                // Rebusca dados atualizados na Henrik API
+                var jogadorAtualizado = await _henrik.BuscarJogador(gameName, tagLine);
+                if (jogadorAtualizado == null)
+                    return BadRequest(new { erro = "Nao foi possivel buscar dados atualizados na API." });
+
+                jogador.RankAtual         = jogadorAtualizado.RankAtual;
+                jogador.RankImagem        = jogadorAtualizado.RankImagem;
+                jogador.UltimaAtualizacao = DateTime.UtcNow;
+
+                // Importa novas partidas
+                var partidas      = await _henrik.BuscarPartidas(gameName, tagLine, jogador.Puuid);
+                var matchIdsExist = _context.Partidas.Select(p => p.MatchId).ToHashSet();
+                var partidasNovas = partidas.Where(p => !matchIdsExist.Contains(p.MatchId)).ToList();
+
+                _context.Partidas.AddRange(partidasNovas);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Jogador {GameName} atualizado. {Count} novas partidas.", gameName, partidasNovas.Count);
+
+                return Ok(new
+                {
+                    jogador.GameName,
+                    jogador.TagLine,
+                    jogador.RankAtual,
+                    jogador.RankImagem,
+                    jogador.UltimaAtualizacao,
+                    NovasPartidas = partidasNovas.Count,
+                    mensagem      = "Dados atualizados com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao atualizar jogador {GameName}#{TagLine}", gameName, tagLine);
+                return StatusCode(500, new { erro = "Erro interno. Tente novamente mais tarde." });
+            }
+        }
+
+        // GET: api/v1/Jogadores/Karo/BR1/historico?page=1&size=10
         [HttpGet("{gameName}/{tagLine}/historico")]
         public async Task<IActionResult> Historico(string gameName, string tagLine, int page = 1, int size = 10)
         {
@@ -98,7 +151,7 @@ namespace api.Controllers
                     .FirstOrDefaultAsync(j => j.GameName == gameName && j.TagLine == tagLine);
 
                 if (jogador == null)
-                    return NotFound(new { erro = "Jogador não encontrado no banco. Faça uma busca primeiro." });
+                    return NotFound(new { erro = "Jogador nao encontrado no banco. Faca uma busca primeiro." });
 
                 var total = await _context.Partidas.CountAsync(p => p.Puuid == jogador.Puuid);
 
@@ -111,21 +164,21 @@ namespace api.Controllers
 
                 return Ok(new
                 {
-                    Page        = page,
-                    Size        = size,
-                    Total       = total,
+                    Page         = page,
+                    Size         = size,
+                    Total        = total,
                     TotalPaginas = (int)Math.Ceiling((double)total / size),
-                    Partidas    = partidas
+                    Partidas     = partidas
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao buscar histórico de {GameName}#{TagLine}", gameName, tagLine);
+                _logger.LogError(ex, "Erro ao buscar historico de {GameName}#{TagLine}", gameName, tagLine);
                 return StatusCode(500, new { erro = "Erro interno. Tente novamente mais tarde." });
             }
         }
 
-        // GET: api/Jogadores/Karo/BR1/estatisticas
+        // GET: api/v1/Jogadores/Karo/BR1/estatisticas
         [HttpGet("{gameName}/{tagLine}/estatisticas")]
         public async Task<IActionResult> Estatisticas(string gameName, string tagLine)
         {
@@ -135,7 +188,7 @@ namespace api.Controllers
                     .FirstOrDefaultAsync(j => j.GameName == gameName && j.TagLine == tagLine);
 
                 if (jogador == null)
-                    return NotFound(new { erro = "Jogador não encontrado no banco. Faça uma busca primeiro." });
+                    return NotFound(new { erro = "Jogador nao encontrado no banco. Faca uma busca primeiro." });
 
                 var partidas = await _context.Partidas
                     .Where(p => p.Puuid == jogador.Puuid)
@@ -151,7 +204,7 @@ namespace api.Controllers
                         Mapa        = g.Key,
                         Partidas    = g.Count(),
                         KdaMedia    = Math.Round(g.Average(p => p.Kda), 2),
-                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitória") / g.Count() * 100, 1)}%"
+                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitoria") / g.Count() * 100, 1)}%"
                     })
                     .OrderByDescending(x => x.KdaMedia);
 
@@ -162,7 +215,7 @@ namespace api.Controllers
                         Agente      = g.Key,
                         Partidas    = g.Count(),
                         KdaMedia    = Math.Round(g.Average(p => p.Kda), 2),
-                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitória") / g.Count() * 100, 1)}%"
+                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitoria") / g.Count() * 100, 1)}%"
                     })
                     .OrderByDescending(x => x.KdaMedia);
 
@@ -173,20 +226,62 @@ namespace api.Controllers
                         Modo        = g.Key,
                         Partidas    = g.Count(),
                         KdaMedia    = Math.Round(g.Average(p => p.Kda), 2),
-                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitória") / g.Count() * 100, 1)}%"
+                        TaxaVitoria = $"{Math.Round((double)g.Count(p => p.Resultado == "Vitoria") / g.Count() * 100, 1)}%"
                     })
                     .OrderByDescending(x => x.KdaMedia);
 
                 return Ok(new
                 {
-                    PorMapa    = porMapa,
-                    PorAgente  = porAgente,
-                    PorModo    = porModo
+                    PorMapa   = porMapa,
+                    PorAgente = porAgente,
+                    PorModo   = porModo
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao buscar estatísticas de {GameName}#{TagLine}", gameName, tagLine);
+                _logger.LogError(ex, "Erro ao buscar estatisticas de {GameName}#{TagLine}", gameName, tagLine);
+                return StatusCode(500, new { erro = "Erro interno. Tente novamente mais tarde." });
+            }
+        }
+
+        // GET: api/v1/Jogadores/ranking
+        [HttpGet("ranking")]
+        public async Task<IActionResult> Ranking()
+        {
+            try
+            {
+                var jogadores = await _context.Jogadores.ToListAsync();
+                var ranking   = new List<object>();
+
+                foreach (var jogador in jogadores)
+                {
+                    var partidas = await _context.Partidas
+                        .Where(p => p.Puuid == jogador.Puuid)
+                        .ToListAsync();
+
+                    if (!partidas.Any()) continue;
+
+                    ranking.Add(new
+                    {
+                        jogador.GameName,
+                        jogador.TagLine,
+                        jogador.RankAtual,
+                        jogador.RankImagem,
+                        TotalPartidas = partidas.Count,
+                        KdaGeral      = Math.Round(partidas.Average(p => p.Kda), 2),
+                        TaxaVitoria   = Math.Round((double)partidas.Count(p => p.Resultado == "Vitoria") / partidas.Count * 100, 1)
+                    });
+                }
+
+                var rankingOrdenado = ranking
+                    .OrderByDescending(r => ((dynamic)r).KdaGeral)
+                    .ToList();
+
+                return Ok(rankingOrdenado);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar ranking");
                 return StatusCode(500, new { erro = "Erro interno. Tente novamente mais tarde." });
             }
         }

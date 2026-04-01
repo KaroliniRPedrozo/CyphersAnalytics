@@ -3,7 +3,7 @@ namespace api.models
     public class Partida
     {
         public int Id { get; set; }
-        public string MatchId { get; set; } = "";   // ← ID único da partida
+        public string MatchId { get; set; } = "";
         public string Puuid { get; set; } = "";
         public string GameName { get; set; } = "";
         public string TagLine { get; set; } = "";
@@ -17,5 +17,6 @@ namespace api.models
         public double Kda { get; set; }
         public int Score { get; set; }
         public DateTime DataPartida { get; set; } = DateTime.UtcNow;
+        public DateTime? DeletedAt { get; set; } = null; // ← Soft Delete
     }
 }
