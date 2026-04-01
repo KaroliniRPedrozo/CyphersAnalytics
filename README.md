@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎮 Cyphers Analytics
+# 🎮 Cyphers Analytics Backend
 
 ### Valorant Dashboard — Análise Estatística de Partidas
 
