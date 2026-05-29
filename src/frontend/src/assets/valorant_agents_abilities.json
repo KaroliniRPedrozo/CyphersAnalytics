@@ -1,0 +1,978 @@
+{
+  "valorant_agents": {
+    "source": "valorant.fandom.com/wiki/VALORANT_Wiki",
+    "total_agents": 30,
+    "roles": {
+      "Duelist": {
+        "description": "Agentes ofensivos com habilidades voltadas para duelos e entrada em sites. São esperados para liderar entradas e conseguir eliminações.",
+        "agents": [
+          {
+            "name": "Jett",
+            "agent_number": 2,
+            "origin": "Coreia do Sul",
+            "abilities": {
+              "passive": {
+                "name": "Drift",
+                "key": "Passiva",
+                "description": "Jett paira no ar ao segurar o pulo. Ao cair de qualquer altura, ela não sofre dano de queda. Também pode planar de um local para outro."
+              },
+              "basic_1": {
+                "name": "Updraft",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Jett sobe instantaneamente no ar, obtendo uma perspectiva aérea. Pode atirar enquanto está no ar, mas com menos precisão."
+              },
+              "basic_2": {
+                "name": "Cloudburst",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança uma fumaça instantânea no local desejado, bloqueando a visão de qualquer um dentro ou fora dela. A trajetória pode ser ajustada enquanto o botão é mantido pressionado."
+              },
+              "signature": {
+                "name": "Tailwind",
+                "key": "E",
+                "type": "Signature",
+                "description": "Ativa o Tailwind por um tempo. Dentro desse período, pressione novamente para dar um dash na direção desejada. Recarrega a cada 2 kills após o uso."
+              },
+              "ultimate": {
+                "name": "Blade Storm",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Equipa 5 facas de precisão com maior velocidade de movimento. Matar inimigos recarrega as facas. Alt Fire dispara todas as facas de uma vez."
+              }
+            }
+          },
+          {
+            "name": "Phoenix",
+            "agent_number": 3,
+            "origin": "Reino Unido",
+            "abilities": {
+              "passive": {
+                "name": "Heating Up",
+                "key": "Passiva",
+                "description": "Phoenix se cura em até 50 HP ao ficar nas próprias chamas."
+              },
+              "basic_1": {
+                "name": "Hot Hands",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma bola de fogo que cria uma poça de chamas ao aterrissar, causando dano aos inimigos. Phoenix se cura ao ficar nas chamas."
+              },
+              "basic_2": {
+                "name": "Blaze",
+                "key": "C",
+                "type": "Básica",
+                "description": "Cria uma parede de fogo ao longo do chão que bloqueia a visão e causa dano a quem a tocar."
+              },
+              "signature": {
+                "name": "Curveball",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança um orbe de fogo que se curva para a esquerda ou direita, detonando após um breve instante e cegando quem olhar para ele."
+              },
+              "ultimate": {
+                "name": "Run It Back",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Cria um marcador e se transforma em um clone por um tempo. Ao morrer ou quando o tempo acaba, Phoenix retorna ao marcador com o HP e armadura que tinha antes."
+              }
+            }
+          },
+          {
+            "name": "Reyna",
+            "agent_number": 11,
+            "origin": "México",
+            "abilities": {
+              "passive": {
+                "name": "Soul Harvest",
+                "key": "Passiva",
+                "description": "Após eliminar ou ajudar a eliminar inimigos, cria orbes de alma que ficam por 3 segundos. Reyna usa suas signature abilities enquanto os orbes estão disponíveis."
+              },
+              "basic_1": {
+                "name": "Leer",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança um olho roxo na direção desejada que cega qualquer um que olhar para ele. Pode atravessar paredes e é destrutível."
+              },
+              "signature_1": {
+                "name": "Devour",
+                "key": "Q",
+                "type": "Signature",
+                "description": "Consome um orbe de alma para se curar ao longo do tempo (máx. 100 HP). O excesso de cura se converte em armadura temporária (overheal)."
+              },
+              "signature_2": {
+                "name": "Dismiss",
+                "key": "E",
+                "type": "Signature",
+                "description": "Consome um orbe de alma para se tornar intangível e mais rápida temporariamente. Durante o Ultimate, também fica invisível e se cura ao máximo."
+              },
+              "ultimate": {
+                "name": "Empress",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Ativa o modo Empress: maior velocidade, cadência de tiro, velocidade de recarga e recuperação. O timer é renovado a cada kill. Potencializa as signature abilities."
+              }
+            }
+          },
+          {
+            "name": "Yoru",
+            "agent_number": 14,
+            "origin": "Japão",
+            "abilities": {
+              "basic_1": {
+                "name": "Blindside",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Cria um orbe dimensional que pode quicar em uma superfície e depois detona, cegando quem estiver na linha de visão."
+              },
+              "basic_2": {
+                "name": "Fakeout",
+                "key": "C",
+                "type": "Básica",
+                "description": "Cria uma ilusão de Yoru que caminha para frente. Ao ser destruída, a ilusão cega os inimigos próximos."
+              },
+              "signature": {
+                "name": "Gatecrash",
+                "key": "E",
+                "type": "Signature",
+                "description": "Coloca um marcador de teletransporte no chão ou o envia para frente. Yoru pode se teletransportar ao marcador a qualquer momento. Pode realizar um teletransporte falso (som sem movimento)."
+              },
+              "ultimate": {
+                "name": "Dimensional Drift",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Yoru entra em sua própria dimensão, ficando invisível e intangível para inimigos e seus scanners. Pode usar habilidades enquanto está no plano alternativo."
+              }
+            }
+          },
+          {
+            "name": "Neon",
+            "agent_number": 18,
+            "origin": "Filipinas",
+            "abilities": {
+              "passive": {
+                "name": "Energy",
+                "key": "Passiva",
+                "description": "Neon começa cada rodada com 100 pontos de energia que se depletam ao usar signature e ultimate. Recarrega com o tempo."
+              },
+              "basic_1": {
+                "name": "Relay Bolt",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança um raio elétrico que quica em uma superfície e depois cria um círculo de concussão, atordoando qualquer agente dentro do raio."
+              },
+              "basic_2": {
+                "name": "Fast Lane",
+                "key": "C",
+                "type": "Básica",
+                "description": "Dispara duas paredes elétricas que bloqueiam a visão de qualquer um dentro ou fora delas."
+              },
+              "signature": {
+                "name": "High Gear",
+                "key": "E",
+                "type": "Signature",
+                "description": "Neon guarda sua arma e entra no modo de alta velocidade, ganhando também a habilidade de deslizar (slide). O slide é recarregado a cada 2 kills."
+              },
+              "ultimate": {
+                "name": "Overdrive",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Ativa o modo de velocidade total e dispara um raio elétrico contínuo pelos dedos enquanto a barra de energia não zerar. Kills durante o Overdrive recarregam a energia totalmente."
+              }
+            }
+          },
+          {
+            "name": "Raze",
+            "agent_number": 9,
+            "origin": "Brasil",
+            "abilities": {
+              "basic_1": {
+                "name": "Blast Pack",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma mochila de explosivos que gruda em qualquer superfície. Detona após um tempo ou ao reativar a habilidade, jogando objetos próximos para longe."
+              },
+              "basic_2": {
+                "name": "Boom Bot",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança um robô que avança e detecta inimigos num cone à frente. Ao encontrar um inimigo, o persegue e explode. Pode ser destruído por tiros."
+              },
+              "signature": {
+                "name": "Paint Shells",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança uma granada que, ao detonar, se fragmenta em granadas menores causando mais dano. Recarrega a cada 2 kills após o uso."
+              },
+              "ultimate": {
+                "name": "Showstopper",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Equipa um lança-foguetes e dispara um projétil devastador que elimina todos na área de efeito."
+              }
+            }
+          },
+          {
+            "name": "Iso",
+            "agent_number": 24,
+            "origin": "China",
+            "abilities": {
+              "basic_1": {
+                "name": "Contingency",
+                "key": "C",
+                "type": "Básica",
+                "description": "Monta uma barreira de energia prismática indestrutível que se move para frente, bloqueando projéteis. Alt Fire envia a barreira mais lentamente."
+              },
+              "basic_2": {
+                "name": "Undercut",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança um raio molecular que atravessa paredes e aplica o status Frágil (dano dobrado) em todos os jogadores atingidos."
+              },
+              "signature": {
+                "name": "Double Tap",
+                "key": "E",
+                "type": "Signature",
+                "description": "Inicia um timer de foco. Após completado, entra num estado de flow onde inimigos abatidos geram orbes de energia. Atirar no orbe concede um escudo que absorve uma instância de dano."
+              },
+              "ultimate": {
+                "name": "Kill Contract",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Equipa uma arena interdimensional. Atira uma coluna de energia que arrasta Iso e o primeiro inimigo atingido para um duelo de vida ou morte."
+              }
+            }
+          },
+          {
+            "name": "Waylay",
+            "agent_number": 28,
+            "origin": "Tailândia",
+            "abilities": {
+              "basic_1": {
+                "name": "Saturate",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança instantaneamente um cluster de luz que, ao contato com o chão, explode e aplica Hindering (lentidão de movimento e arma) nos jogadores próximos."
+              },
+              "basic_2": {
+                "name": "Lightspeed",
+                "key": "C",
+                "type": "Básica",
+                "description": "Equipa para preparar um burst de velocidade. Fire para dar dois dashes para frente. Alt Fire para um dash. Apenas o primeiro dash pode te enviar para cima."
+              },
+              "signature": {
+                "name": "Refract",
+                "key": "E",
+                "type": "Signature",
+                "description": "Cria instantaneamente um beacon de luz no chão. Ao reativar, Waylay retorna ao beacon como pura luz, invulnerável durante o deslocamento. Recarrega a cada 2 kills."
+              },
+              "ultimate": {
+                "name": "Convergent Paths",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Foca o poder prismático para criar uma imagem posterior que projeta um raio de luz. Após um breve delay, Waylay ganha um boost de velocidade e a luz se expande, aplicando Hindering em todos no caminho."
+              }
+            }
+          }
+        ]
+      },
+      "Initiator": {
+        "description": "Agentes especializados em reunir informações, criar aberturas e facilitar a entrada das equipes em sites.",
+        "agents": [
+          {
+            "name": "Sova",
+            "agent_number": 4,
+            "origin": "Rússia",
+            "abilities": {
+              "basic_1": {
+                "name": "Shock Bolt",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Dispara uma flecha elétrica que, ao atingir uma superfície, cria uma explosão de choque causando dano a todos nas proximidades."
+              },
+              "basic_2": {
+                "name": "Owl Drone",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança um drone controlável que revela inimigos à frente. Pode disparar dardos de rastreamento que revelam a localização do alvo por um tempo. Destrutível por tiros inimigos."
+              },
+              "signature": {
+                "name": "Recon Bolt",
+                "key": "E",
+                "type": "Signature",
+                "description": "Equipa uma flecha de reconhecimento que, ao ser disparada, gruda em qualquer superfície e revela os inimigos ao redor periodicamente. Destrutível por tiros."
+              },
+              "ultimate": {
+                "name": "Hunter's Fury",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Carrega o arco ao máximo e dispara até 3 ondas elétricas que atravessam paredes, causando dano pesado e revelando inimigos atingidos."
+              }
+            }
+          },
+          {
+            "name": "Breach",
+            "agent_number": 8,
+            "origin": "Suécia",
+            "abilities": {
+              "basic_1": {
+                "name": "Flashpoint",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Dispara uma flare cegante através de qualquer parede ou estrutura. Ao detonar no outro lado, cega qualquer um olhando na direção."
+              },
+              "basic_2": {
+                "name": "Aftershock",
+                "key": "C",
+                "type": "Básica",
+                "description": "Coloca um beacon em qualquer parede. O beacon dispara 3 pulsos de dano para o outro lado da parede."
+              },
+              "signature": {
+                "name": "Fault Line",
+                "key": "E",
+                "type": "Signature",
+                "description": "Carrega e dispara um pulso sísmico que atordoa todos na zona de impacto por um tempo."
+              },
+              "ultimate": {
+                "name": "Rolling Thunder",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Lança uma grande carga sísmica em uma área extensa, arremessando e atordoando todos na zona de impacto."
+              }
+            }
+          },
+          {
+            "name": "Skye",
+            "agent_number": 13,
+            "origin": "Austrália",
+            "abilities": {
+              "basic_1": {
+                "name": "Trailblazer",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Invoca um tigre-da-tasmânia controlável que pode se mover e aturdir inimigos ao se aproximar. Pode ser destruído por tiros inimigos."
+              },
+              "basic_2": {
+                "name": "Regrowth",
+                "key": "C",
+                "type": "Básica",
+                "description": "Cura aliados próximos ao longo do tempo até 100 HP enquanto a barra de cura não esvaziar."
+              },
+              "signature": {
+                "name": "Guiding Light",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança um pássaro que pode ser detonado no ar para cegar inimigos que olharem para ele. Skye recebe informação se algum inimigo foi cego."
+              },
+              "ultimate": {
+                "name": "Seekers",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Invoca 3 criaturas rastreadoras que perseguem os inimigos. Ao contato, cegam e ensurdecem o alvo. Destrutíveis por tiros."
+              }
+            }
+          },
+          {
+            "name": "KAY/O",
+            "agent_number": 16,
+            "origin": "Futuro",
+            "abilities": {
+              "basic_1": {
+                "name": "FLASH/DRIVE",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma granada de flash que estoura após um breve delay e cega quem olhar para ela. Pode ser quicada ou lançada como lob para pop mais rápido e menor duração."
+              },
+              "basic_2": {
+                "name": "FRAG/MENT",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança um fragmento de energia que detona ao contato com superfícies, criando uma poça que causa dano pulsante a qualquer agente que ficar nela."
+              },
+              "signature": {
+                "name": "ZERO/POINT",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança uma faca sem dano que gruda em qualquer superfície e, ao detonar, suprime as habilidades de todos os inimigos na área. Destrutível por tiros."
+              },
+              "ultimate": {
+                "name": "NULL/CMD",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Emite uma onda de energia que suprime e trava as habilidades de todos os inimigos atingidos. Se KAY/O morrer durante o ultimate, fica imobilizado com HP extra e pode ser revivido por aliados."
+              }
+            }
+          },
+          {
+            "name": "Fade",
+            "agent_number": 19,
+            "origin": "Turquia",
+            "abilities": {
+              "passive": {
+                "name": "Terror Trail",
+                "key": "Passiva",
+                "description": "Sempre que Haunt ou Nightfall atingem inimigos, eles são marcados com névoa escura. Prowlers seguem automaticamente alvos marcados."
+              },
+              "basic_1": {
+                "name": "Seize",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma esfera de medo que cria um círculo escuro ao aterrissar, prendendo os inimigos no lugar, aplicando decay e ensurdecendo-os."
+              },
+              "basic_2": {
+                "name": "Prowler",
+                "key": "C",
+                "type": "Básica",
+                "description": "Invoca um Prowler controlável que detecta e persegue inimigos à frente, cegando-os ao contato."
+              },
+              "signature": {
+                "name": "Haunt",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança um observador que, ao cair, escaneia e revela inimigos ao redor, marcando-os com Terror Trail."
+              },
+              "ultimate": {
+                "name": "Nightfall",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Lança uma onda de pesadelo que avança pela área. Inimigos atingidos são marcados com Terror Trail e ficam ensurdecidos."
+              }
+            }
+          },
+          {
+            "name": "Gekko",
+            "agent_number": 21,
+            "origin": "EUA",
+            "abilities": {
+              "passive": {
+                "name": "Globules",
+                "key": "Passiva",
+                "description": "As criaturas de Gekko se transformam em bolas após uso ou ao expirar. Gekko pode recolhê-las para reutilizar as habilidades."
+              },
+              "basic_1": {
+                "name": "Wingman",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança Wingman que corre pela área e concussiona o primeiro inimigo que encontrar. Se carregando a spike, Wingman pode ser enviado para plantar por você."
+              },
+              "basic_2": {
+                "name": "Mosh Pit",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança Mosh no chão. Após aterrissar, Mosh explode criando uma poça venenosa que causa dano pesado a quem ficar nela."
+              },
+              "signature": {
+                "name": "Dizzy",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança Dizzy para o alto. No ar, Dizzy cospe goo azul que cega os inimigos escaneados (exceto visão periférica)."
+              },
+              "ultimate": {
+                "name": "Thrash",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Lança Thrash controlável pela área. Ao ativar, Thrash salta sobre uma área e explode, desarmando e desacelerando os inimigos atingidos."
+              }
+            }
+          },
+          {
+            "name": "Tejo",
+            "agent_number": 27,
+            "origin": "Colômbia",
+            "abilities": {
+              "basic_1": {
+                "name": "Stealth Drone",
+                "key": "C",
+                "type": "Básica",
+                "description": "Equipa um drone stealth invisível a longa distância. Fire para lançar e controlar. Dispara novamente para ativar um pulso que Suprime e Revela inimigos atingidos."
+              },
+              "basic_2": {
+                "name": "Special Delivery",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Equipa uma granada adesiva. Fire para lançar; ela gruda na primeira superfície e explode, concussionando inimigos na área. Alt Fire para lançar com um quique."
+              },
+              "signature": {
+                "name": "Guided Salvo",
+                "key": "E",
+                "type": "Signature",
+                "description": "Abre um mapa tático. Selecione até 2 locais-alvo e Alt Fire para lançar mísseis autônomos que navegam até os destinos e detonam em pulsos de dano."
+              },
+              "ultimate": {
+                "name": "Armageddon",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Abre um mapa tático para selecionar um ponto e direção de ataque aéreo. Após confirmar, uma série de explosões varre toda a área escolhida, causando dano massivo."
+              }
+            }
+          }
+        ]
+      },
+      "Controller": {
+        "description": "Agentes especializados em controlar sightlines e dividir o mapa com smokes, paredes e outras habilidades de controle de área.",
+        "agents": [
+          {
+            "name": "Brimstone",
+            "agent_number": 1,
+            "origin": "EUA",
+            "abilities": {
+              "basic_1": {
+                "name": "Incendiary",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma granada incendiária que, ao detonar, cria uma poça de fogo causando dano pesado ao longo do tempo a qualquer agente na área."
+              },
+              "basic_2": {
+                "name": "Stim Beacon",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança instantaneamente um Combat Stim Beacon que concede a aliados na área maior velocidade, cadência de tiro e velocidade de recarga."
+              },
+              "signature": {
+                "name": "Sky Smoke",
+                "key": "E",
+                "type": "Signature",
+                "description": "Abre o mapa tático e marca até 3 locais para lançar bombas de fumaça de longa duração que bloqueiam a visão de qualquer um dentro ou fora."
+              },
+              "ultimate": {
+                "name": "Orbital Strike",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Abre o mapa e marca um local para lançar um Ataque Orbital devastador que causa dano contínuo, destrói utilitários e bloqueia a visão na área."
+              }
+            }
+          },
+          {
+            "name": "Omen",
+            "agent_number": 6,
+            "origin": "Desconhecida",
+            "abilities": {
+              "basic_1": {
+                "name": "Paranoia",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança um orbe de sombra na direção desejada que cresce e desaparece após uma distância. Cega e ensurdece quem estiver no caminho."
+              },
+              "basic_2": {
+                "name": "Shrouded Step",
+                "key": "C",
+                "type": "Básica",
+                "description": "Mostra um marcador e, ao ativar, Omen se teletransporta para o local marcado após um breve delay."
+              },
+              "signature": {
+                "name": "Dark Cover",
+                "key": "E",
+                "type": "Signature",
+                "description": "Abre uma visão 3D do mapa. Ao ativar, Omen lança uma fumaça no marcador verde, bloqueando a visão de qualquer um dentro ou fora dela."
+              },
+              "ultimate": {
+                "name": "From the Shadows",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Abre o mapa e marca um local. Omen se transforma em uma entidade de sombra e pode se teletransportar para qualquer local do mapa. A entidade pode ser destruída para cancelar."
+              }
+            }
+          },
+          {
+            "name": "Viper",
+            "agent_number": 7,
+            "origin": "EUA",
+            "abilities": {
+              "passive_1": {
+                "name": "Toxin",
+                "key": "Passiva",
+                "description": "Todas as habilidades de Viper aplicam decay (deterioração) aos inimigos, tornando-os vulneráveis e diminuindo seu HP ao longo do tempo."
+              },
+              "passive_2": {
+                "name": "Fuel",
+                "key": "Passiva",
+                "description": "Viper começa com 100 pontos de Combustível Tóxico que alimentam a Poison Cloud e a Toxic Screen enquanto ativas."
+              },
+              "basic_1": {
+                "name": "Snakebite",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança um frasco de veneno que cria uma poça ao contato, causando dano e aplicando Toxin a qualquer agente na área."
+              },
+              "basic_2": {
+                "name": "Poison Cloud",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança um orbe que, ao ser ativado, emite uma nuvem de veneno que bloqueia a visão e aplica Toxin a quem entrar."
+              },
+              "signature": {
+                "name": "Toxic Screen",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança uma linha de emissores em linha reta. Ao ativar com o Combustível, cria uma parede de veneno que bloqueia a visão e aplica Toxin a quem atravessar."
+              },
+              "ultimate": {
+                "name": "Viper's Pit",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Cria uma área de veneno massiva ao redor de um ponto. Reduz a visibilidade dos inimigos e aplica Toxin instantaneamente. Dura indefinidamente a menos que Viper morra ou saia por mais de 8 segundos."
+              }
+            }
+          },
+          {
+            "name": "Astra",
+            "agent_number": 15,
+            "origin": "Gana",
+            "abilities": {
+              "passive": {
+                "name": "Astral Form",
+                "key": "Passiva",
+                "description": "Ativa o Astral Form instaneamente, permitindo a Astra ver o mapa completo, posicionar estrelas e usar o Cosmic Divide. Seu corpo fica ocioso durante esse modo."
+              },
+              "basic_1": {
+                "name": "Nova Pulse",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Detona uma estrela criando uma explosão que atordoa todos na área por um breve período."
+              },
+              "basic_2": {
+                "name": "Gravity Well",
+                "key": "C",
+                "type": "Básica",
+                "description": "Puxa todos os agentes próximos a uma estrela em direção ao centro. Todos os atingidos ficam vulneráveis."
+              },
+              "basic_3": {
+                "name": "Nebula / Dissipate",
+                "key": "E",
+                "type": "Básica",
+                "description": "Transforma uma estrela numa pequena cúpula de fumaça que bloqueia a visão. Dissipate consome a estrela para uma smoke de menor duração, recarregando 1 estrela."
+              },
+              "signature": {
+                "name": "Stars",
+                "key": "F",
+                "type": "Signature",
+                "description": "Coloca estrelas em qualquer ponto do mapa. Após ativarem, as estrelas podem ser usadas como Nova Pulse, Gravity Well ou Nebula/Dissipate."
+              },
+              "ultimate": {
+                "name": "Cosmic Divide",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "No Astral Form, Astra marca um ponto para criar uma parede cósmica infinita que bloqueia balas, sons e visão enquanto durar."
+              }
+            }
+          },
+          {
+            "name": "Harbor",
+            "agent_number": 20,
+            "origin": "Índia",
+            "abilities": {
+              "basic_1": {
+                "name": "Cove",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma esfera de água que cria uma cúpula com armadura resistente ao cair no chão. Bloqueia a visão e pode ser destruída por tiros."
+              },
+              "basic_2": {
+                "name": "Cascade",
+                "key": "C",
+                "type": "Básica",
+                "description": "Cria uma parede de água que avança para frente, bloqueando a visão e desacelerando 30% qualquer um que a tocar. Pode ser parada antes de percorrer a distância total."
+              },
+              "signature": {
+                "name": "High Tide",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança uma parede de água maior que atravessa qualquer obstáculo. Bloqueia a visão e desacelera quem a tocar. A trajetória pode ser curvada durante o lançamento."
+              },
+              "ultimate": {
+                "name": "Reckoning",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Cria uma poça de água que avança lentamente e realiza 3 ondas de concussão consecutivas em inimigos dentro da área."
+              }
+            }
+          },
+          {
+            "name": "Clove",
+            "agent_number": 25,
+            "origin": "Escócia",
+            "abilities": {
+              "basic_1": {
+                "name": "Pick-Me-Up",
+                "key": "C",
+                "type": "Básica",
+                "description": "Absorve instantaneamente a força vital de um inimigo que Clove matou ou danificou, ganhando haste e HP temporário (overheal)."
+              },
+              "basic_2": {
+                "name": "Meddle",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Equipa um fragmento de essência de imortalidade. Ao aterrissar, ele explode após um delay e aplica Decay temporário (máx. 90 HP) em todos os alvos na área."
+              },
+              "signature": {
+                "name": "Ruse",
+                "key": "E",
+                "type": "Signature",
+                "description": "Abre uma visão tática do campo de batalha. Fire para marcar locais e Alt Fire para lançar nuvens de fumaça que bloqueiam a visão. Clove pode usar esta habilidade após a morte."
+              },
+              "ultimate": {
+                "name": "Not Dead Yet",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Após morrer, Clove pode se ressuscitar. Uma vez ressuscitado, precisa conseguir uma kill ou assistência no tempo determinado, ou morrerá automaticamente."
+              }
+            }
+          },
+          {
+            "name": "Miks",
+            "agent_number": 30,
+            "origin": "Desconhecida",
+            "abilities": {
+              "basic_1": {
+                "name": "Harmonize",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Equipa Harmonize e mira em um aliado para ativar um Combat Stim para ambos. O buff se renova a cada kill de qualquer um dos dois. Alt Fire aplica o stim apenas em si mesmo."
+              },
+              "basic_2": {
+                "name": "M-Pulse",
+                "key": "C",
+                "type": "Básica",
+                "description": "Equipa o dispositivo M-Pulse com dois modos via Alt Fire: um modo emite um pulso de concussão para inimigos; o outro envia ondas de cura para aliados na área."
+              },
+              "signature": {
+                "name": "Waveform",
+                "key": "E",
+                "type": "Signature",
+                "description": "Abre um mapa para marcar locais de fumaça. Alt Fire para confirmar e lançar smokes instantâneos que bloqueiam a visão. Sistema similar ao de Brimstone/Clove."
+              },
+              "ultimate": {
+                "name": "Bassquake",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Carrega e libera uma poderosa onda de Radiância Sônica à frente. A explosão arremessa inimigos para trás, ensurdece e desacelera todos no caminho."
+              }
+            }
+          }
+        ]
+      },
+      "Sentinel": {
+        "description": "Agentes defensivos especializados em proteger flancos, travar sites e fornecer suporte à equipe.",
+        "agents": [
+          {
+            "name": "Sage",
+            "agent_number": 5,
+            "origin": "China",
+            "abilities": {
+              "basic_1": {
+                "name": "Slow Orb",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Cria um orbe de cristal que, ao explodir, cria uma poça que desacelera qualquer agente que pisar nela e produz um som característico."
+              },
+              "basic_2": {
+                "name": "Barrier Orb",
+                "key": "C",
+                "type": "Básica",
+                "description": "Cria uma barreira de cristal sólida que bloqueia o movimento de outros agentes. Leva tempo para se formar completamente e bloqueia a visão."
+              },
+              "signature": {
+                "name": "Healing Orb",
+                "key": "E",
+                "type": "Signature",
+                "description": "Gera um orbe de cura para usar em um aliado ou em si mesma. Aliados se curam mais rapidamente do que a própria Sage."
+              },
+              "ultimate": {
+                "name": "Resurrection",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Lança o efeito de ressurreição em um aliado morto. Após o tempo de efeito, o aliado é revivido com HP completo."
+              }
+            }
+          },
+          {
+            "name": "Cypher",
+            "agent_number": 10,
+            "origin": "Marrocos",
+            "abilities": {
+              "basic_1": {
+                "name": "Cyber Cage",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Lança uma gaiola cibernética no chão. Ao ativar, cria uma barreira cinemática que bloqueia a visão de qualquer um dentro ou fora da área."
+              },
+              "basic_2": {
+                "name": "Trap Wire",
+                "key": "C",
+                "type": "Básica",
+                "description": "Coloca um arame cibernético que, ao ser tocado por inimigos, os puxa e atordoa brevemente, revelando sua localização. O arame se rearma após o uso e só é destruído por balas ou habilidades."
+              },
+              "signature": {
+                "name": "Spycam",
+                "key": "E",
+                "type": "Signature",
+                "description": "Instala uma câmera em qualquer superfície. Pode espionar o local à distância e disparar dardos de rastreamento que revelam a localização estática do inimigo atingido."
+              },
+              "ultimate": {
+                "name": "Neural Theft",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Lança o chapéu de Cypher em um inimigo morto. Após uma breve inicialização, revela a localização de todos os inimigos vivos duas vezes com 2 segundos de intervalo."
+              }
+            }
+          },
+          {
+            "name": "Killjoy",
+            "agent_number": 12,
+            "origin": "Alemanha",
+            "abilities": {
+              "basic_1": {
+                "name": "Alarmbot",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Coloca um bot scanner que fica oculto. Ao detectar inimigos, os persegue e explode, tornando o alvo vulnerável por um breve período."
+              },
+              "basic_2": {
+                "name": "Nanoswarm",
+                "key": "C",
+                "type": "Básica",
+                "description": "Coloca uma granada enxame em qualquer ponto. Ao ativar, cria um campo de energia que causa dano a todos dentro da área."
+              },
+              "signature": {
+                "name": "Turret",
+                "key": "E",
+                "type": "Signature",
+                "description": "Instala uma torre sentinela que detecta e dispara em qualquer agente dentro de um cone de 100 graus à frente."
+              },
+              "ultimate": {
+                "name": "Lockdown",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Coloca um dispositivo que, após um tempo de ativação, cria uma cúpula de lockdown massiva. Todos os inimigos na área são desarmados e desacelerados por um tempo."
+              }
+            }
+          },
+          {
+            "name": "Chamber",
+            "agent_number": 17,
+            "origin": "França",
+            "abilities": {
+              "basic_1": {
+                "name": "Headhunter",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Equipa uma pistola customizada de alto calibre com mira ADS. Mata instantaneamente com acerto na cabeça."
+              },
+              "basic_2": {
+                "name": "Trademark",
+                "key": "C",
+                "type": "Básica",
+                "description": "Coloca uma armadilha que, ao detectar inimigos, cria um campo de lentidão. Chamber recebe um alerta sonoro ao ativar."
+              },
+              "signature": {
+                "name": "Rendezvous",
+                "key": "E",
+                "type": "Signature",
+                "description": "Coloca um marcador de âncora. Chamber pode se teletransportar instantaneamente ao marcador a qualquer momento, desde que esteja dentro do raio de alcance."
+              },
+              "ultimate": {
+                "name": "Tour de Force",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Equipa um rifle de sniper customizado com 5 balas que mata com qualquer acerto no corpo. Pode ser vendido para aliados durante crises financeiras."
+              }
+            }
+          },
+          {
+            "name": "Deadlock",
+            "agent_number": 22,
+            "origin": "Noruega",
+            "abilities": {
+              "basic_1": {
+                "name": "GravNet",
+                "key": "C",
+                "type": "Básica",
+                "description": "Lança uma granada que se transforma em uma rede circular. Inimigos presos são forçados a se abaixar e ficam lentos ao se mover."
+              },
+              "basic_2": {
+                "name": "Sonic Sensor",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Instala um sensor em qualquer superfície que detecta sons (passos, tiros, recarga) e aplica concussão na área ao ser ativado."
+              },
+              "signature": {
+                "name": "Barrier Mesh",
+                "key": "E",
+                "type": "Signature",
+                "description": "Lança um disco que cria um núcleo com barreiras em X ao redor que impedem a passagem de inimigos. As barreiras são feitas de nanowires destrutíveis."
+              },
+              "ultimate": {
+                "name": "Annihilation",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Tece um fio de nanowires em uma parede. Os fios encapsulam o inimigo ao contato num casulo, desarmando-o e puxando-o até o ponto de origem. Se o casulo chegar ao início, o inimigo é eliminado."
+              }
+            }
+          },
+          {
+            "name": "Vyse",
+            "agent_number": 26,
+            "origin": "Desconhecida",
+            "abilities": {
+              "basic_1": {
+                "name": "Razorvine",
+                "key": "C",
+                "type": "Básica",
+                "description": "Equipa um ninho de metal líquido e o lança ao chão, onde fica invisível até ser ativado. Ao ativar, se expande num campo de vinhas que desacelera e causa dano a inimigos que atravessarem."
+              },
+              "basic_2": {
+                "name": "Shear",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Coloca uma armadilha de nanowires. Ao ser acionada por um inimigo, uma parede metálica indestrutível surge atrás dele, separando-o da equipe por um tempo."
+              },
+              "signature": {
+                "name": "Arc Rose",
+                "key": "E",
+                "type": "Signature",
+                "description": "Coloca uma Arc Rose stealth em uma superfície (ou no lado oposto com Alt Fire). Fica invisível até ser reativada manualmente, cegando todos que estiverem na linha de visão. Pode ser recolhida e reimplantada."
+              },
+              "ultimate": {
+                "name": "Steel Garden",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Libera uma torrente de espinhos de metal que travam (jam) as armas primárias dos inimigos na área de efeito por um breve período, forçando-os a usar pistolas e facas."
+              }
+            }
+          },
+          {
+            "name": "Veto",
+            "agent_number": 29,
+            "origin": "Desconhecida",
+            "abilities": {
+              "basic_1": {
+                "name": "Crosscut",
+                "key": "C",
+                "type": "Básica",
+                "description": "Equipa uma bola de energia vórtice e a coloca no chão. Dentro do raio de alcance, mire no vórtice e ative para se teletransportar até ele. Pode ser recuperado e reimplantado na fase de compra."
+              },
+              "basic_2": {
+                "name": "Chokehold",
+                "key": "Q",
+                "type": "Básica",
+                "description": "Equipa um fragmento de Slime Mutado e o lança. Ao atingir o chão, se transforma numa armadilha. Inimigos que passarem por ela ficam presos, ensurdecidos e corrompidos."
+              },
+              "signature": {
+                "name": "Interceptor",
+                "key": "E",
+                "type": "Signature",
+                "description": "Equipa o Phage e o implanta no local-alvo. Ao reativar, o Phage neutraliza qualquer equipamento destrutível ou projetil inimigo próximo (ex.: Boom Bot, Wingman). Apenas 20 HP, destruível por 1 bala."
+              },
+              "ultimate": {
+                "name": "Evolution",
+                "key": "X",
+                "type": "Ultimate",
+                "description": "Ativa mutação total, concedendo aprimoramento de combate, regeneração e imunidade total a debuffs. Transforma Veto num tanque de linha de frente capaz de liderar entradas ou negar pós-plants."
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

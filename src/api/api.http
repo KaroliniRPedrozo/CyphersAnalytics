@@ -1,0 +1,81 @@
+@api_HostAddress = http://localhost:5185
+
+GET {{api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+### ============================================================
+### EXEMPLOS DE USO: Partidas com Estatísticas (1:1)
+### ============================================================
+
+### Listar todas as Partidas (com Estatísticas)
+GET {{api_HostAddress}}/api/v1/Partidas?page=1&size=10
+Accept: application/json
+
+###
+
+### Buscar uma Partida específica (com Estatísticas)
+GET {{api_HostAddress}}/api/v1/Partidas/1
+Accept: application/json
+
+###
+
+### Criar Partida COM Estatísticas (novo DTO)
+POST {{api_HostAddress}}/api/v1/Partidas
+Content-Type: application/json
+
+{
+  "matchId": "match-123-abc",
+  "puuid": "player-puuid-123",
+  "gameName": "SeuNome",
+  "tagLine": "BR",
+  "mapa": "Abyss",
+  "modo": "Competitive",
+  "agente": "Omen",
+  "resultado": "Vitoria",
+  "kills": 15,
+  "deaths": 8,
+  "assists": 6,
+  "kda": 2.63,
+  "score": 2840,
+  "dataPartida": "2026-05-25T10:30:00Z",
+  "estatistica": {
+    "acsScore": 284,
+    "econScore": 18500,
+    "rundasGanhas": 13,
+    "rundasPerdidas": 7,
+    "headshotPercentual": 42.5,
+    "bodyShotCount": 18,
+    "legShotCount": 5,
+    "armaFavorita": "Vandal",
+    "danosCausados": 3200,
+    "danosRecebidos": 1850
+  }
+}
+
+###
+
+### Criar Partida SEM Estatísticas (só dados básicos)
+POST {{api_HostAddress}}/api/v1/Partidas
+Content-Type: application/json
+
+{
+  "matchId": "match-456-def",
+  "puuid": "player-puuid-456",
+  "gameName": "OutroJogador",
+  "tagLine": "BR",
+  "mapa": "Haven",
+  "modo": "Deathmatch",
+  "agente": "Jett",
+  "resultado": "Derrota",
+  "kills": 8,
+  "deaths": 12,
+  "assists": 3,
+  "kda": 0.92,
+  "score": 1650,
+  "dataPartida": "2026-05-25T14:15:00Z"
+}
+
+###
+
