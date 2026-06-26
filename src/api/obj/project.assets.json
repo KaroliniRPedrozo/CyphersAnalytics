@@ -3704,19 +3704,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\karol\\.nuget\\packages\\": {}
+    "C:\\Users\\Meu PC\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\VScode\\CyphersAnalyticsFull\\src\\api\\api.csproj",
+      "projectUniqueName": "C:\\VScode\\CyphersAnalytics\\src\\api\\api.csproj",
       "projectName": "api",
-      "projectPath": "C:\\VScode\\CyphersAnalyticsFull\\src\\api\\api.csproj",
-      "packagesPath": "C:\\Users\\karol\\.nuget\\packages\\",
-      "outputPath": "C:\\VScode\\CyphersAnalyticsFull\\src\\api\\obj\\",
+      "projectPath": "C:\\VScode\\CyphersAnalytics\\src\\api\\api.csproj",
+      "packagesPath": "C:\\Users\\Meu PC\\.nuget\\packages\\",
+      "outputPath": "C:\\VScode\\CyphersAnalytics\\src\\api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\karol\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Meu PC\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3739,7 +3739,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -3815,7 +3816,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

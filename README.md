@@ -1,8 +1,8 @@
-# <img src="./src/frontend/src/assets/valorant-white-logo.png" width="70" align="center"> Cypher's Analytics
+# ![Valorant logo](./src/frontend/src/assets/valorant-white-logo.png) Cypher's Analytics
 
 > Uma plataforma web de alta performance para compilação, análise de dados e visualização de estatísticas do Valorant. Desenvolvida com foco em fornecer uma experiência de usuário (UX) fluida, arquitetura escalável e interfaces altamente intuitivas.
 
-![Status do Projeto](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow?style=for-the-badge)
+![Status do Projeto](https://img.shields.io/badge/Status-Finalizado-green?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![.NET](https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -50,9 +50,10 @@ A aplicação é dividida em uma arquitetura desacoplada (Client-Server), garant
 - **PostgreSQL:** Banco relacional encarregado do armazenamento de credenciais, dados de cache de jogadores e histórico imutável de partidas.
 
 <<<<<<< HEAD
+
 #### Diagrama de Entidades (ER)
 
-```
+```plaintext
 ┌─────────────────────────────────┐
 │          USUARIOS               │
 ├─────────────────────────────────┤
@@ -112,7 +113,7 @@ A API do projeto está devidamente versionada sob o prefixo `/api/v1/`. Abaixo e
 ### 🔐 Autenticação (`/api/v1/Auth`)
 
 | Método | Rota | Descrição | Estrutura do Payload (JSON) |
-| :--- | :--- | :--- | :--- |
+| --- | --- | --- | --- |
 | `POST` | `/registrar` | Cria uma nova conta de usuário no sistema. | `{ "email", "senha", "gameName", "tagLine" }` |
 | `POST` | `/login` | Autentica o usuário e concede acesso ao sistema. | `{ "email", "senha" }` |
 | `PUT` | `/perfil` | Atualiza as informações do perfil, senha ou nick associado. | `{ "emailAtual", "senhaAtual", "novoEmail"?, "novaSenha"?, "gameName"?, "tagLine"? }` |
@@ -135,7 +136,7 @@ A API do projeto está devidamente versionada sob o prefixo `/api/v1/`. Abaixo e
 | `GET` | `/{id}` | Recupera os detalhes completos de uma partida específica através do seu ID identificador. |
 | `POST` | `/` | Registra manualmente uma nova partida no banco de dados. |
 | `PUT` | `/{id}` | Atualiza propriedades de uma partida existente. O KDA é recalculado automaticamente no backend caso o número de mortes seja igual a zero. |
-| `DELETE`| `/{id}` | Executa a deleção lógica da partida (*Soft Delete*), definindo a flag temporal `DeletedAt` sem expurgar o dado permanentemente. |
+| `DELETE` | `/{id}` | Executa a deleção lógica da partida (*Soft Delete*), definindo a flag temporal `DeletedAt` sem expurgar o dado permanentemente. |
 
 ### 📢 Status do Jogo (`/api/v1/Status`)
 
@@ -160,8 +161,7 @@ var partidasNovas = partidas.Where(p => string.IsNullOrEmpty(p.MatchId) || !matc
 
 A remoção de registros em `/api/v1/Partidas` não destrói a informação fisicamente. O sistema utiliza a abordagem de Soft Delete, permitindo auditorias e recuperação de dados futuras:
 
-```
-C#
+```csharp
 partida.DeletedAt = DateTime.UtcNow; // ← Soft Delete
 await _context.SaveChangesAsync();
 ```
@@ -181,7 +181,7 @@ PostgreSQL <https://www.postgresql.org/>
 
 ### 1. Clonando o Repositório
 
-```
+```bash
 git clone [https://github.com/SEU-USUARIO/CyphersAnalytics.git](https://github.com/SEU-USUARIO/CyphersAnalytics.git)
 cd CyphersAnalyticsFULL
 ```
@@ -190,8 +190,7 @@ cd CyphersAnalyticsFULL
 
 Certifique-se de configurar a sua Connection String do PostgreSQL no arquivo `src/api/appsettings.json` ou `appsettings.Development.json` antes de iniciar.
 
-```
-
+```bash
 # Acesse a pasta do backend
 cd src/api
 
@@ -206,8 +205,7 @@ A API estará disponível por padrão nos endereços locais: `http://localhost:5
 
 ### 3. Configurando e Rodando o Frontend (React + Vite)
 
-```
-
+```bash
 # Abra um novo terminal, retorne à raiz e acesse o frontend
 cd src/frontend
 
@@ -222,7 +220,7 @@ O servidor do frontend será inicializado e estará acessível em: `http://local
 
 ## 📂 Estrutura Simplificada de Pastas
 
-```
+```plaintext
 CyphersAnalytics/
 ├── src/
 │   ├── api/                 # Código-fonte do Backend (.NET Web API)
