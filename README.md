@@ -1,4 +1,4 @@
-# ![Valorant logo](./src/frontend/src/assets/valorant-white-logo.png) Cypher's Analytics
+# <img src="https://raw.githubusercontent.com/KaroliniRPedrozo/Cyphers-Analytics_Frontend/main/src/assets/valorant-white-logo.png" width="70" align="center"> Cypher's Analytics
 
 > Uma plataforma web de alta performance para compilação, análise de dados e visualização de estatísticas do Valorant. Desenvolvida com foco em fornecer uma experiência de usuário (UX) fluida, arquitetura escalável e interfaces altamente intuitivas.
 
