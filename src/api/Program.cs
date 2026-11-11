@@ -32,20 +32,32 @@ if (File.Exists(envPath))
     }
 }
 
-var dbConnection  = Environment.GetEnvironmentVariable("DB_CONNECTION")!;
+var dbConnection  = ConverterConnectionString(
+                        Environment.GetEnvironmentVariable("DB_CONNECTION")
+                        ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+                        ?? throw new InvalidOperationException("Variavel DB_CONNECTION nao configurada."));
 var henrikBaseUrl = Environment.GetEnvironmentVariable("HENRIK_BASEURL")!;
 var henrikApiKey  = Environment.GetEnvironmentVariable("HENRIK_APIKEY")!;
 var jwtSecret     = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "chave-padrao-dev";
+
+// CORS — origens locais + as definidas em FRONTEND_URL (separadas por virgula)
+// Ex.: FRONTEND_URL=https://cyphers-analytics.vercel.app
+var origensPermitidas = new List<string>
+{
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:3000"
+};
+origensPermitidas.AddRange(
+    (Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "")
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Select(o => o.TrimEnd('/')));
 
 // CORS — deve ser registrado antes de tudo
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("frontend", policy =>
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:3000"
-              )
+        policy.WithOrigins(origensPermitidas.ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
@@ -142,6 +154,13 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 
 var app = builder.Build();
 
+// Aplica as migrations pendentes ao iniciar (cria a tabela Usuarios num banco novo)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -158,3 +177,20 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Converte "postgres://user:senha@host:porta/banco" (formato do Render/Railway/Supabase)
+// para o formato que o Npgsql entende. Se ja estiver no formato "Host=...;", devolve igual.
+static string ConverterConnectionString(string conn)
+{
+    if (!conn.StartsWith("postgres://") && !conn.StartsWith("postgresql://"))
+        return conn;
+
+    var uri  = new Uri(conn);
+    var info = uri.UserInfo.Split(':', 2);
+    var porta = uri.Port > 0 ? uri.Port : 5432;
+
+    return $"Host={uri.Host};Port={porta};Database={uri.AbsolutePath.TrimStart('/')};" +
+           $"Username={Uri.UnescapeDataString(info[0])};" +
+           $"Password={(info.Length > 1 ? Uri.UnescapeDataString(info[1]) : "")};" +
+           "SSL Mode=Require";
+}

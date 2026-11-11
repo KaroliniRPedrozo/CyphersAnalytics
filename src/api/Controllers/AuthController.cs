@@ -29,15 +29,26 @@ namespace api.Controllers
         {
             try
             {
-                if (await _context.Usuarios.AnyAsync(u => u.Email == dto.Email))
+                var email    = (dto.Email ?? "").Trim().ToLowerInvariant();
+                var gameName = (dto.GameName ?? "").Trim();
+                var tagLine  = (dto.TagLine ?? "").Trim().TrimStart('#');
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(dto.Senha) ||
+                    string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(tagLine))
+                    return BadRequest(new { erro = "Preencha todos os campos." });
+
+                if (dto.Senha.Length < 6)
+                    return BadRequest(new { erro = "A senha deve ter pelo menos 6 caracteres." });
+
+                if (await _context.Usuarios.AnyAsync(u => u.Email.ToLower() == email))
                     return BadRequest(new { erro = "Email ja cadastrado." });
 
                 var usuario = new Usuario
                 {
-                    Email     = dto.Email,
+                    Email     = email,
                     SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha),
-                    GameName  = dto.GameName,
-                    TagLine   = dto.TagLine
+                    GameName  = gameName,
+                    TagLine   = tagLine
                 };
 
                 _context.Usuarios.Add(usuario);
@@ -59,10 +70,11 @@ namespace api.Controllers
         {
             try
             {
+                var email = (dto.Email ?? "").Trim().ToLowerInvariant();
                 var usuario = await _context.Usuarios
-                    .FirstOrDefaultAsync(u => u.Email == dto.Email);
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email);
 
-                if (usuario == null || !BCrypt.Net.BCrypt.Verify(dto.Senha, usuario.SenhaHash))
+                if (usuario == null || !SenhaConfere(dto.Senha, usuario.SenhaHash))
                     return Unauthorized(new { erro = "Email ou senha invalidos." });
 
                 var token = _auth.GerarToken(usuario);
@@ -75,6 +87,13 @@ namespace api.Controllers
                 _logger.LogError(ex, "Erro ao fazer login");
                 return StatusCode(500, new { erro = "Erro interno. Tente novamente mais tarde." });
             }
+        }
+
+        // Evita erro 500 quando o hash salvo e invalido (ex.: usuario de exemplo da migration)
+        private static bool SenhaConfere(string? senha, string hash)
+        {
+            try { return BCrypt.Net.BCrypt.Verify(senha ?? "", hash); }
+            catch { return false; }
         }
 
         // PUT: api/v1/Auth/perfil

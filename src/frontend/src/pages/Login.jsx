@@ -4,6 +4,14 @@ import api from '../services/api';
 import bgAgents from '../assets/bg-agents.jpg';
 import logoValorant from '../assets/logo-valorant.png';
 
+// Mostra a mensagem real do backend em vez de um texto generico
+function mensagemDeErro(err, padrao) {
+  console.error(err);
+  if (!err.response) return 'Nao foi possivel conectar ao servidor. Verifique se a API esta online.';
+  if (err.response.status === 429) return 'Muitas tentativas. Aguarde um minuto e tente de novo.';
+  return err.response.data?.erro || padrao;
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const [aba, setAba]           = useState('login');
@@ -24,7 +32,7 @@ export default function Login() {
       localStorage.setItem('gameName', data.gameName);
       localStorage.setItem('tagLine', data.tagLine);
       navigate('/dashboard');
-    } catch { setErro('Email ou senha invalidos.'); }
+    } catch (err) { setErro(mensagemDeErro(err, 'Email ou senha invalidos.')); }
     finally { setLoading(false); }
   }
 
@@ -32,10 +40,15 @@ export default function Login() {
     e.preventDefault();
     setLoading(true); setErro(''); setSucesso('');
     try {
-      await api.post('/Auth/registrar', { email, senha, gameName, tagLine });
+      await api.post('/Auth/registrar', {
+        email: email.trim(),
+        senha,
+        gameName: gameName.trim(),
+        tagLine: tagLine.trim().replace(/^#/, ''),
+      });
       setSucesso('Conta criada! Faca o login.');
-      setAba('login'); setEmail(''); setSenha('');
-    } catch { setErro('Erro ao criar conta. Tente novamente.'); }
+      setAba('login'); setSenha('');
+    } catch (err) { setErro(mensagemDeErro(err, 'Erro ao criar conta. Tente novamente.')); }
     finally { setLoading(false); }
   }
 
