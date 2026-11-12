@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.database;
@@ -8,8 +9,9 @@ namespace api.Controllers
 {
     [ApiController]
     [ApiVersion("1")]
+    [Authorize] // antes toda a API de partidas era publica: qualquer um podia listar, criar, editar e apagar
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class PartidasController : ControllerBase
+    public class PartidasController : ApiControllerBase
     {
         private readonly AppDbContext _context;
         private readonly ILogger<PartidasController> _logger;
@@ -20,15 +22,27 @@ namespace api.Controllers
             _logger  = logger;
         }
 
+        /// <summary>Somente as partidas do usuario autenticado (nunca de terceiros).</summary>
+        private IQueryable<Partida> MinhasPartidas()
+        {
+            var id   = UsuarioId;
+            var nome = GameNameDoToken.ToLower();
+            var tag  = TagLineDoToken.ToLower();
+            return _context.Partidas.Where(p => p.UsuarioId == id || (p.GameName.ToLower() == nome && p.TagLine.ToLower() == tag));
+        }
+
         // GET: api/v1/Partidas?page=1&size=10
         [HttpGet]
         public async Task<IActionResult> GetPartidas(int page = 1, int size = 10)
         {
             try
             {
-                var total = await _context.Partidas.CountAsync();
+                page = Math.Max(1, page);
+                size = Math.Clamp(size, 1, 50);
 
-                var partidas = await _context.Partidas
+                var total = await MinhasPartidas().CountAsync();
+
+                var partidas = await MinhasPartidas()
                     .OrderByDescending(p => p.DataPartida)
                     .Skip((page - 1) * size)
                     .Take(size)
@@ -56,7 +70,7 @@ namespace api.Controllers
         {
             try
             {
-                var partida = await _context.Partidas.FindAsync(id);
+                var partida = await MinhasPartidas().FirstOrDefaultAsync(p => p.Id == id);
 
                 if (partida == null)
                     return NotFound(new { erro = $"Partida {id} não encontrada." });
@@ -82,8 +96,10 @@ namespace api.Controllers
                 {
                     MatchId = dto.MatchId,
                     Puuid = dto.Puuid,
-                    GameName = dto.GameName,
-                    TagLine = dto.TagLine,
+                    // O dono do registro e sempre o usuario do token, nao o que vier no corpo.
+                    UsuarioId = UsuarioId,
+                    GameName = GameNameDoToken,
+                    TagLine = TagLineDoToken,
                     Mapa = dto.Mapa,
                     Modo = dto.Modo,
                     Agente = dto.Agente,
@@ -133,7 +149,7 @@ namespace api.Controllers
         {
             try
             {
-                var partida = await _context.Partidas.FindAsync(id);
+                var partida = await MinhasPartidas().FirstOrDefaultAsync(p => p.Id == id);
 
                 if (partida == null)
                     return NotFound(new { erro = $"Partida {id} nao encontrada." });
@@ -169,7 +185,7 @@ namespace api.Controllers
         {
             try
             {
-                var partida = await _context.Partidas.FindAsync(id);
+                var partida = await MinhasPartidas().FirstOrDefaultAsync(p => p.Id == id);
 
                 if (partida == null)
                     return NotFound(new { erro = $"Partida {id} não encontrada." });

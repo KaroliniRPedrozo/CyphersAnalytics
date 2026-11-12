@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import bgAgents from '../assets/bg-agents.jpg';
 import logoValorant from '../assets/logo-valorant.png';
@@ -19,6 +19,7 @@ export default function Login() {
   const [senha, setSenha]       = useState('');
   const [gameName, setGameName] = useState('');
   const [tagLine, setTagLine]   = useState('');
+  const [aceitou, setAceitou]   = useState(false);
   const [erro, setErro]         = useState('');
   const [sucesso, setSucesso]   = useState('');
   const [loading, setLoading]   = useState(false);
@@ -31,7 +32,8 @@ export default function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('gameName', data.gameName);
       localStorage.setItem('tagLine', data.tagLine);
-      navigate('/dashboard');
+      // Contas antigas ainda não registraram o consentimento: levamos direto à tela de autorização.
+      navigate(data.consentimento === false ? '/conta' : '/dashboard');
     } catch (err) { setErro(mensagemDeErro(err, 'Email ou senha invalidos.')); }
     finally { setLoading(false); }
   }
@@ -45,6 +47,7 @@ export default function Login() {
         senha,
         gameName: gameName.trim(),
         tagLine: tagLine.trim().replace(/^#/, ''),
+        aceitouTermos: aceitou,
       });
       setSucesso('Conta criada! Faca o login.');
       setAba('login'); setSenha('');
@@ -108,7 +111,7 @@ export default function Login() {
               value={email} onChange={e => setEmail(e.target.value)} required />
 
             <label style={s.label}>Senha</label>
-            <input style={s.input} type="password" placeholder="••••••••"
+            <input style={s.input} type="password" placeholder="Mínimo de 8 caracteres" minLength={8}
               value={senha} onChange={e => setSenha(e.target.value)} required />
 
             <label style={s.label}>Riot ID</label>
@@ -123,10 +126,19 @@ export default function Login() {
               💡 Seu nome e tag ficam no canto inferior esquerdo do jogo no formato <strong>Nome#Tag</strong>
             </div>
 
+            <label style={s.consentimento}>
+              <input type="checkbox" checked={aceitou} onChange={e => setAceitou(e.target.checked)} required />
+              <span>
+                Li e aceito os <Link to="/termos" style={s.linkDestaque}>Termos de Uso</Link> e a{' '}
+                <Link to="/privacidade" style={s.linkDestaque}>Política de Privacidade</Link>, e autorizo o uso dos
+                dados das minhas partidas de VALORANT para exibir minhas estatísticas.
+              </span>
+            </label>
+
             {erro    && <div style={s.alerta}>⚠️ {erro}</div>}
             {sucesso && <div style={s.sucessoMsg}>✅ {sucesso}</div>}
 
-            <button style={loading ? s.botaoDisabled : s.botao} type="submit" disabled={loading}>
+            <button style={loading || !aceitou ? s.botaoDisabled : s.botao} type="submit" disabled={loading || !aceitou}>
               {loading ? 'CRIANDO...' : 'CRIAR CONTA'}
             </button>
 
@@ -182,5 +194,6 @@ const s = {
 
   linkSecundario:{ color:'#6b7280', fontSize:'0.9rem', textAlign:'center', marginTop:'1.25rem', cursor:'default' },
   linkDestaque:  { color:'#ff4655', fontWeight:700, cursor:'pointer' },
+  consentimento: { display:'flex', gap:'0.6rem', alignItems:'flex-start', color:'#9ca3af', fontSize:'0.8rem', lineHeight:1.5, marginTop:'0.75rem' },
   esqueceu:      { color:'#6b7280', fontSize:'0.82rem', textAlign:'center', marginTop:'0.25rem', cursor:'pointer' },
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import api from '../services/api';
+import api, { mensagemDeErro } from '../services/api';
 import { getRankImg, getAgenteCard, getAgenteIcone, getMapaImg, getAgenteHabilidades, getAgenteArtwork } from '../services/assets';
 import logoValorant from '../assets/logo-valorant.png';
 import skullIcon from '../assets/skull-icon.webp';
@@ -73,7 +73,7 @@ export default function Dashboard() {
 
     } catch (err) {
       console.error('Erro ao carregar dados:', err);
-      setErro('Erro ao carregar dados. Tente novamente.');
+      setErro(mensagemDeErro(err, 'Erro ao carregar dados. Tente novamente.'));
     } finally {
       setLoading(false);
     }
@@ -201,6 +201,7 @@ export default function Dashboard() {
             {rankImg && <img src={rankImg} alt={dados?.rankAtual} style={s.sRankImg} loading="lazy" />}
             <span style={s.sRankNome}>{dados?.rankAtual?.toUpperCase() || 'UNRANKED'}</span>
           </div>
+          <button onClick={() => navigate('/conta')} style={s.sSairBtn}>MINHA CONTA</button>
           <button onClick={logout} style={s.sSairBtn}>SAIR</button>
         </aside>
 

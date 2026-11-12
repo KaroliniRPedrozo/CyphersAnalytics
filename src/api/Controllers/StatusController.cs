@@ -1,28 +1,26 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using api.services;
-using Asp.Versioning; // Adicionado para suportar o versionamento do seu projeto
+using Asp.Versioning;
 
 namespace api.Controllers
 {
     [ApiController]
-    [ApiVersion("1")] // Etiqueta obrigatória no seu sistema
-    [Route("api/v{version:apiVersion}/[controller]")] // Rota dinâmica padrão
+    [ApiVersion("1")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class StatusController : ControllerBase
     {
-        private readonly HenrikService _henrikService;
+        private readonly IValorantDataProvider _provider;
 
-        public StatusController(HenrikService henrikService)
+        public StatusController(IValorantDataProvider provider)
         {
-            _henrikService = henrikService;
+            _provider = provider;
         }
 
+        // Dado publico e agregado do jogo (nao identifica jogadores), com cache de 5 min no provedor.
         [HttpGet("agentes-desativados")]
         public async Task<IActionResult> Get()
         {
-            var desativados = await _henrikService.BuscarAgentesDesativadosAsync();
-
-            return Ok(desativados);
+            return Ok(await _provider.BuscarAgentesDesativadosAsync());
         }
     }
 }
