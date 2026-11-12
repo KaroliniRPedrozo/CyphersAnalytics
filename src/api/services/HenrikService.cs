@@ -1,35 +1,37 @@
-using System;
-using System.Linq;
+using System.Net;
 using System.Text.Json;
 using api.models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace api.services
 {
-    public class HenrikService
+    /// <summary>
+    /// Provedor baseado na API NAO OFICIAL HenrikDev. Mantido como fallback enquanto a chave
+    /// de producao da Riot nao e aprovada (DATA_PROVIDER=henrik).
+    /// </summary>
+    public class HenrikService : IValorantDataProvider
     {
         private readonly HttpClient _http;
         private readonly ILogger<HenrikService> _logger;
         private readonly IMemoryCache _cache;
+        private readonly string _regiao;
 
         public HenrikService(HttpClient http, ILogger<HenrikService> logger, IMemoryCache cache)
         {
             _http   = http;
             _logger = logger;
             _cache  = cache;
+            _regiao = (Environment.GetEnvironmentVariable("HENRIK_REGION") ?? "br").ToLowerInvariant();
+        }
 
-            if (_http.BaseAddress == null)
-            {
-                var baseUrl = Environment.GetEnvironmentVariable("HENRIK_BASEURL") ?? "https://api.henrikdev.xyz";
-                var apiKey  = Environment.GetEnvironmentVariable("HENRIK_APIKEY") ?? "";
-                _http.BaseAddress = new Uri(baseUrl);
-                if (!_http.DefaultRequestHeaders.Contains("Authorization"))
-                    _http.DefaultRequestHeaders.Add("Authorization", apiKey);
-            }
+        /// <summary>Lanca UpstreamUnavailableException em 429/5xx; devolve false para os demais erros (ex.: 404).</summary>
+        private static bool Sucesso(HttpResponseMessage r)
+        {
+            if (r.IsSuccessStatusCode) return true;
+            if (r.StatusCode == HttpStatusCode.TooManyRequests || (int)r.StatusCode >= 500)
+                throw new UpstreamUnavailableException($"API externa indisponivel ({(int)r.StatusCode}).",
+                    r.Headers.RetryAfter?.Delta);
+            return false;
         }
 
         public async Task<Jogador?> BuscarJogador(string gameName, string tagLine)
@@ -38,39 +40,38 @@ namespace api.services
             {
                 _logger.LogInformation("Buscando jogador {GameName}#{TagLine}", gameName, tagLine);
 
-                // Codifica os nomes para evitar quebra na URL por causa de espaços e símbolos
-                var encodedGameName = Uri.EscapeDataString(gameName);
-                var encodedTagLine  = Uri.EscapeDataString(tagLine);
+                var n = Uri.EscapeDataString(gameName);
+                var t = Uri.EscapeDataString(tagLine);
 
-                // Usa as variáveis codificadas na URL
-                var response = await _http.GetAsync($"/valorant/v1/account/{encodedGameName}/{encodedTagLine}");
-                if (!response.IsSuccessStatusCode)
+                using var response = await _http.GetAsync($"/valorant/v1/account/{n}/{t}");
+                if (!Sucesso(response))
                 {
-                    _logger.LogWarning("Jogador não encontrado: {GameName}#{TagLine}", gameName, tagLine);
+                    _logger.LogWarning("Jogador nao encontrado: {GameName}#{TagLine}", gameName, tagLine);
                     return null;
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                var data = JsonDocument.Parse(json).RootElement.GetProperty("data");
+                var data = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("data");
 
-                // Usa as variáveis codificadas na URL do Rank também
-                var rankResponse = await _http.GetAsync($"/valorant/v1/mmr/br/{encodedGameName}/{encodedTagLine}");
-                var rankJson     = await rankResponse.Content.ReadAsStringAsync();
-                var rankRoot     = JsonDocument.Parse(rankJson).RootElement;
-
-                string rankAtual  = "Unranked";
-                string rankImagem = "";
-
-                if (rankRoot.TryGetProperty("data", out var rankData) && rankData.ValueKind != JsonValueKind.Null)
+                string rankAtual = "Unranked", rankImagem = "";
+                using var rankResponse = await _http.GetAsync($"/valorant/v1/mmr/{_regiao}/{n}/{t}");
+                if (rankResponse.IsSuccessStatusCode)
                 {
-                    if (rankData.TryGetProperty("currenttierpatched", out var tier) && tier.ValueKind != JsonValueKind.Null)
-                        rankAtual = tier.GetString() ?? "Unranked";
+                    var rankRoot = JsonDocument.Parse(await rankResponse.Content.ReadAsStringAsync()).RootElement;
+                    if (rankRoot.TryGetProperty("data", out var rankData) && rankData.ValueKind == JsonValueKind.Object)
+                    {
+                        if (rankData.TryGetProperty("currenttierpatched", out var tier) && tier.ValueKind == JsonValueKind.String)
+                            rankAtual = tier.GetString() ?? "Unranked";
 
-                    if (rankData.TryGetProperty("images", out var images) && images.ValueKind != JsonValueKind.Null && images.TryGetProperty("small", out var small))
-                        rankImagem = small.GetString() ?? "";
+                        if (rankData.TryGetProperty("images", out var images) && images.ValueKind == JsonValueKind.Object &&
+                            images.TryGetProperty("small", out var small) && small.ValueKind == JsonValueKind.String)
+                            rankImagem = small.GetString() ?? "";
+                    }
                 }
-
-                _logger.LogInformation("Jogador encontrado: {GameName} — Rank: {Rank}", gameName, rankAtual);
+                else if (rankResponse.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    // Rank e secundario: segue sem ele em vez de falhar a busca inteira.
+                    _logger.LogWarning("Rank nao carregado por limite de requisicoes.");
+                }
 
                 return new Jogador
                 {
@@ -82,6 +83,7 @@ namespace api.services
                     UltimaAtualizacao = DateTime.UtcNow
                 };
             }
+            catch (UpstreamUnavailableException) { throw; }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar jogador {GameName}#{TagLine}", gameName, tagLine);
@@ -89,86 +91,38 @@ namespace api.services
             }
         }
 
+        public Task<(string Rank, string Imagem)?> BuscarRankAsync(string puuid)
+            => Task.FromResult<(string Rank, string Imagem)?>(null);
+
         public async Task<(int Season, int Act)> BuscarTemporadaAtual()
         {
+            const string chave = "valorant_temporada";
+            var fallback = (Season: 8, Act: 3);
+
+            if (_cache.TryGetValue(chave, out (int Season, int Act) cached)) return cached;
+
             try
             {
-                // Verifica cache primeiro
-                if (_cache.TryGetValue("valorant_temporada", out (int season, int act) cached))
-                    return cached;
-
-                _logger.LogInformation("Buscando temporada/ato atual");
-
-                var response = await _http.GetAsync("/valorant/v1/content");
+                using var response = await _http.GetAsync("/valorant/v1/content");
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("Erro ao buscar conteúdo da API: {StatusCode}", response.StatusCode);
-                    return (8, 3); // Fallback mais recente (Episódio 8, Ato 3)
+                    _logger.LogWarning("Erro ao buscar conteudo da API: {StatusCode}", response.StatusCode);
+                    return fallback;
                 }
 
-                var json = await response.Content.ReadAsStringAsync();
-                var root = JsonDocument.Parse(json).RootElement;
-
-                int season = 8, act = 3; // Valores padrão caso não consiga ler
-
-                if (root.TryGetProperty("data", out var data) &&
-                    data.TryGetProperty("seasons", out var seasons) &&
-                    seasons.ValueKind == JsonValueKind.Array)
+                var root = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+                if (root.TryGetProperty("data", out var data) && data.TryGetProperty("seasons", out var seasons) &&
+                    ParsingHelpers.ExtrairTemporada(seasons) is { } atual)
                 {
-                    JsonElement? activeAct = null;
-
-                    // 1. Procura o Ato que tem a tag "isActive" = true
-                    foreach (var s in seasons.EnumerateArray())
-                    {
-                        if (s.TryGetProperty("isActive", out var isActive) && isActive.GetBoolean() &&
-                            s.TryGetProperty("type", out var type) && type.GetString() == "act")
-                        {
-                            activeAct = s;
-                            break;
-                        }
-                    }
-
-                    if (activeAct.HasValue)
-                    {
-                        // 2. Extrai o número do nome do Ato (ex: "ACT 3" vira 3)
-                        var actName = activeAct.Value.GetProperty("name").GetString();
-                        if (!string.IsNullOrEmpty(actName))
-                        {
-                            var actNumberStr = new string(actName.Where(char.IsDigit).ToArray());
-                            if (int.TryParse(actNumberStr, out var parsedAct)) act = parsedAct;
-                        }
-
-                        // 3. O Ato possui um "parentId" que liga ele ao seu respectivo Episódio
-                        if (activeAct.Value.TryGetProperty("parentId", out var parentIdProp))
-                        {
-                            var parentId = parentIdProp.GetString();
-                            var activeEpisode = seasons.EnumerateArray().FirstOrDefault(x =>
-                                x.TryGetProperty("id", out var idProp) && idProp.GetString() == parentId);
-
-                            if (activeEpisode.ValueKind != JsonValueKind.Undefined)
-                            {
-                                var epName = activeEpisode.GetProperty("name").GetString();
-                                if (!string.IsNullOrEmpty(epName))
-                                {
-                                    var epNumberStr = new string(epName.Where(char.IsDigit).ToArray());
-                                    if (int.TryParse(epNumberStr, out var parsedEp)) season = parsedEp;
-                                }
-                            }
-                        }
-                    }
+                    _cache.Set(chave, atual, TimeSpan.FromHours(1));
+                    return atual;
                 }
-
-                var result = (season, act);
-                // Salva no cache por 1 hora
-                _cache.Set("valorant_temporada", result, TimeSpan.FromHours(1));
-
-                _logger.LogInformation("Temporada/Ato atualizada com sucesso: Season {Season}, Act {Act}", season, act);
-                return result;
+                return fallback;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao extrair temporada atual da API");
-                return (8, 3); // Fallback de emergência
+                return fallback;
             }
         }
 
@@ -178,21 +132,16 @@ namespace api.services
             {
                 _logger.LogInformation("Buscando partidas de {GameName}#{TagLine}", gameName, tagLine);
 
-                // Codifica os parâmetros também nas partidas
-                var encodedGameName = Uri.EscapeDataString(gameName);
-                var encodedTagLine  = Uri.EscapeDataString(tagLine);
+                var n = Uri.EscapeDataString(gameName);
+                var t = Uri.EscapeDataString(tagLine);
 
-                // Usa as variáveis codificadas na URL
-                using var request  = new HttpRequestMessage(HttpMethod.Get, $"/valorant/v3/matches/br/{encodedGameName}/{encodedTagLine}?size=5");
-                using var response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                using var response = await _http.GetAsync($"/valorant/v3/matches/{_regiao}/{n}/{t}?size=5");
+                if (!Sucesso(response)) return new List<Partida>();
 
-                if (!response.IsSuccessStatusCode) return new List<Partida>();
-
-                var json     = await response.Content.ReadAsStringAsync();
-                var root     = JsonDocument.Parse(json).RootElement;
+                var root     = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
                 var partidas = new List<Partida>();
 
-                if (!root.TryGetProperty("data", out var matches) || matches.ValueKind == JsonValueKind.Null)
+                if (!root.TryGetProperty("data", out var matches) || matches.ValueKind != JsonValueKind.Array)
                     return partidas;
 
                 foreach (var match in matches.EnumerateArray())
@@ -204,6 +153,12 @@ namespace api.services
                         var matchId = metadata.TryGetProperty("matchid", out var mid) ? mid.GetString() ?? "" : "";
                         var mapa    = metadata.TryGetProperty("map",  out var m)  ? m.GetString()  ?? "" : "";
                         var modo    = metadata.TryGetProperty("mode", out var mo) ? mo.GetString() ?? "" : "";
+
+                        // Data real da partida (game_start em segundos Unix), nao a data da sincronizacao.
+                        var dataPartida = DateTime.UtcNow;
+                        if (metadata.TryGetProperty("game_start", out var gs) && gs.ValueKind == JsonValueKind.Number &&
+                            gs.TryGetInt64(out var segundos) && segundos > 0)
+                            dataPartida = DateTimeOffset.FromUnixTimeSeconds(segundos).UtcDateTime;
 
                         if (!match.TryGetProperty("players", out var playersRoot)) continue;
                         if (!playersRoot.TryGetProperty("all_players", out var players)) continue;
@@ -229,11 +184,13 @@ namespace api.services
 
                         var agente = playerData.Value.TryGetProperty("character", out var ch) ? ch.GetString() ?? "" : "";
 
-                        string resultado = "Derrota";
-                        if (playerData.Value.TryGetProperty("team", out var teamProp) && teamProp.ValueKind != JsonValueKind.Null)
+                        var resultado = "Derrota";
+                        if (playerData.Value.TryGetProperty("team", out var teamProp) && teamProp.ValueKind == JsonValueKind.String)
                         {
-                            var team = teamProp.GetString()?.ToLower();
-                            if (team != null && match.TryGetProperty("teams", out var teams) && teams.TryGetProperty(team, out var teamData) && teamData.TryGetProperty("has_won", out var hasWon))
+                            var team = teamProp.GetString()?.ToLowerInvariant();
+                            if (team != null && match.TryGetProperty("teams", out var teams) &&
+                                teams.TryGetProperty(team, out var teamData) &&
+                                teamData.TryGetProperty("has_won", out var hasWon))
                             {
                                 resultado = hasWon.GetBoolean() ? "Vitoria" : "Derrota";
                             }
@@ -241,28 +198,22 @@ namespace api.services
 
                         partidas.Add(new Partida
                         {
-                            MatchId     = matchId,
-                            Puuid       = puuid,
-                            GameName    = gameName,
-                            TagLine     = tagLine,
-                            Mapa        = mapa,
-                            Modo        = modo,
-                            Agente      = agente,
-                            Resultado   = resultado,
-                            Kills       = kills,
-                            Deaths      = deaths,
-                            Assists     = assists,
-                            Kda         = kda,
-                            Score       = score,
-                            DataPartida = DateTime.UtcNow
+                            MatchId = matchId, Puuid = puuid, GameName = gameName, TagLine = tagLine,
+                            Mapa = mapa, Modo = modo, Agente = agente, Resultado = resultado,
+                            Kills = kills, Deaths = deaths, Assists = assists, Kda = kda, Score = score,
+                            DataPartida = dataPartida
                         });
                     }
-                    catch { continue; }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Partida ignorada: formato inesperado.");
+                    }
                 }
 
                 _logger.LogInformation("{Count} partidas encontradas para {GameName}", partidas.Count, gameName);
                 return partidas;
             }
+            catch (UpstreamUnavailableException) { throw; }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar partidas de {GameName}#{TagLine}", gameName, tagLine);
@@ -274,45 +225,19 @@ namespace api.services
         {
             try
             {
-                var resposta = await _http.GetAsync("/valorant/v1/status/br");
+                const string chave = "valorant_agentes_desativados";
+                if (_cache.TryGetValue(chave, out List<object>? cached) && cached != null) return cached;
+
+                using var resposta = await _http.GetAsync($"/valorant/v1/status/{_regiao}");
                 if (!resposta.IsSuccessStatusCode) return new List<object>();
 
-                var jsonString = await resposta.Content.ReadAsStringAsync();
-                var root = JsonDocument.Parse(jsonString).RootElement;
-                
-                var desativados = new List<object>();
-                
+                var root = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync()).RootElement;
                 if (!root.TryGetProperty("data", out var data) || !data.TryGetProperty("incidents", out var incidents))
-                    return desativados;
+                    return new List<object>();
 
-                var todosAgentes = new[] { "Neon", "Omen", "Chamber", "Cypher", "Jett", "Raze", "Iso", "Viper", "Killjoy", "Astra", "Brimstone", "Clove", "Harbor", "Miks", "Phoenix", "Reyna", "Waylay", "Yoru", "Breach", "Fade", "Gekko", "KAYO", "Skye", "Sova", "Tejo", "Deadlock", "Sage", "Veto", "Vyse" };
-
-                foreach (var incidente in incidents.EnumerateArray())
-                {
-                    if (incidente.TryGetProperty("titles", out var titulos))
-                    {
-                        foreach (var t in titulos.EnumerateArray())
-                        {
-                            var texto = t.TryGetProperty("content", out var c) ? c.GetString() ?? "" : "";
-                            
-                            foreach (var agente in todosAgentes)
-                            {
-                                if (texto.Contains(agente, StringComparison.OrdinalIgnoreCase) && 
-                                   (texto.Contains("disable", StringComparison.OrdinalIgnoreCase) || 
-                                    texto.Contains("desativado", StringComparison.OrdinalIgnoreCase) ||
-                                    texto.Contains("issue", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    desativados.Add(new { 
-                                        nome = agente, 
-                                        motivo = texto,
-                                        data = DateTime.Now.ToString("MMMM yyyy")
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                return desativados;
+                var resultado = ParsingHelpers.ExtrairAgentesDesativados(incidents);
+                _cache.Set(chave, resultado, TimeSpan.FromMinutes(5));
+                return resultado;
             }
             catch (Exception ex)
             {

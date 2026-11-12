@@ -14,6 +14,12 @@ namespace api.database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Uma conta Riot (puuid) so pode estar vinculada a um usuario
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.RsoPuuid)
+                .IsUnique()
+                .HasFilter("\"RsoPuuid\" IS NOT NULL");
+
             // Soft Delete para Partidas
             modelBuilder.Entity<Partida>()
                 .HasQueryFilter(p => p.DeletedAt == null);

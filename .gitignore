@@ -1,6 +1,18 @@
 \.env
+.env
 .env.local
 
 bin/
 obj/
 node_modules/
+
+.env.*
+!.env.example
+start.ps1
+appsettings.Production.json
+*.lscache
+
+bin/
+obj/
+node_modules/
+*.patch
